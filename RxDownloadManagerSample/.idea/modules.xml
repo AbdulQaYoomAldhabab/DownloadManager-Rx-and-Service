@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/RxDownloadManagerSample.iml" filepath="$PROJECT_DIR$/RxDownloadManagerSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/downloadManagerService/downloadManagerService.iml" filepath="$PROJECT_DIR$/downloadManagerService/downloadManagerService.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rxDownloadManager/rxDownloadManager.iml" filepath="$PROJECT_DIR$/rxDownloadManager/rxDownloadManager.iml" />
+    </modules>
+  </component>
+</project>
