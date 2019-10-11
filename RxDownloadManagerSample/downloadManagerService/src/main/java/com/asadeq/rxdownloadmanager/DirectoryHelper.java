@@ -1,9 +1,9 @@
-package com.asadeq.rxdownloadmanager.utils;
+package com.asadeq.rxdownloadmanager;
 
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Environment;
-import com.asadeq.rxdownloadmanager.BuildConfig;
+
 import java.io.File;
 import io.reactivex.annotations.NonNull;
 
@@ -19,7 +19,7 @@ public class DirectoryHelper extends ContextWrapper {
     }
 
     public static DirectoryHelper directoryHelper;
-    public DirectoryHelper getInstance(Context context) {
+    public static DirectoryHelper getInstance(Context context) {
         if (directoryHelper == null){
             directoryHelper = new DirectoryHelper(context);
         }

@@ -55,7 +55,7 @@ public class RxDownloader {
         return downloadManager;
     }
 
-    public Observable<String> download(@NonNull String url,
+    public  Observable<String> download(@NonNull String url,
                                        @NonNull String filename,
                                        boolean showCompletedNotification) {
         return download(url, filename, DEFAULT_MIME_TYPE, showCompletedNotification);

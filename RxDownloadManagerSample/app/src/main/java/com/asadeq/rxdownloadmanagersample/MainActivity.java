@@ -5,23 +5,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.asadeq.rxdownloadmanager.DownloadManagerService;
-import com.asadeq.rxdownloadmanager.utils.DirectoryHelper;
-import com.asadeq.rxdownloadmanager.utils.Utils;
+import com.asadeq.rxdownloadmanager.DirectoryHelper;
 import com.asadeq.rxdownloader.RxDownloader;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
@@ -55,9 +57,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             requestPermissions(new String[]{Manifest.permission.REQUEST_INSTALL_PACKAGES}, INSTALL_PACKAGES_REQUEST_CODE);
             return;
         }
-        startActivity(Utils.getInstance().enableUnknownAppSourcesIntent(this));
+        startActivity(enableUnknownAppSourcesIntent(this));
     }
 
+    public Intent enableUnknownAppSourcesIntent(Context mContext) {
+        return new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES
+                , Uri.parse("package:" + mContext.getPackageName()));
+    }
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -74,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.downloadApkButtonRx: {
+//                Uri uri = Uri.parse("file:///storage/emulated/0/storage/emulated/0/rxdownloadmanager/gf_petvet_v1_0_11_en_fr_de_es_it_pt_android-1.apk");
+//                install(uri);
                 startDownloadingRx(APK_DOWNLOAD_URL);
                 break;
             }
@@ -85,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         RxDownloader.getInstance(this).download(url, Uri.parse(url).getLastPathSegment()
                 , DirectoryHelper.getInstance(this).getDownloadDirectory(), RxDownloader.DEFAULT_MIME_TYPE,true)
                 .subscribeOn(Schedulers.io())
-                //.observeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(path ->{
                     // Do what you want with downloaded path
                     Log.i(TAG, path);
@@ -101,8 +109,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // API 24 and above
                 File file_apk = new File(DirectoryHelper.getInstance(getApplicationContext())
                         .getDownloadDirectory(), fileUri.getLastPathSegment());
-                Uri uri_apkfile = FileProvider.getUriForFile(getApplicationContext()
-                        , getPackageName().concat(".provider"), file_apk);
+                /*Uri uri_apkfile = FileProvider.getUriForFile(getApplicationContext()
+                        , getPackageName().concat(".provider"), file_apk);*/
+                Uri uri_apkfile = Uri.parse("content://".concat(fileUri.getPath()));
                 Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
                 intent.setData(uri_apkfile);
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
