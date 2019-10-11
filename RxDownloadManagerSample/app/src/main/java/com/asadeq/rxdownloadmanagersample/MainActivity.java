@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -18,12 +17,11 @@ import android.widget.Toast;
 import com.asadeq.rxdownloadmanager.DownloadManagerService;
 import com.asadeq.rxdownloadmanager.utils.DirectoryHelper;
 import com.asadeq.rxdownloadmanager.utils.Utils;
-import com.esafirm.rxdownloader.RxDownloader;
+import com.asadeq.rxdownloader.RxDownloader;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 

@@ -7,11 +7,11 @@ import com.asadeq.rxdownloadmanager.BuildConfig;
 import java.io.File;
 import io.reactivex.annotations.NonNull;
 
-
 public class DirectoryHelper extends ContextWrapper {
 
     public static final String ROOT_DIRECTORY_NAME = getRootDirectoryName();
     public static final String BACK_SLASH_DELIMITER = "/";
+    public static final String DOT_DELIMITER = ".";
 
     private DirectoryHelper(Context context) {
         super(context);
@@ -19,7 +19,7 @@ public class DirectoryHelper extends ContextWrapper {
     }
 
     public static DirectoryHelper directoryHelper;
-    public static DirectoryHelper getInstance(Context context) {
+    public DirectoryHelper getInstance(Context context) {
         if (directoryHelper == null){
             directoryHelper = new DirectoryHelper(context);
         }
@@ -32,7 +32,7 @@ public class DirectoryHelper extends ContextWrapper {
     }
     private static String getRootDirectoryName() {
         return BuildConfig.APPLICATION_ID.substring(
-                BuildConfig.APPLICATION_ID.lastIndexOf(".")+1);
+                BuildConfig.APPLICATION_ID.lastIndexOf(DOT_DELIMITER)+1);
     }
 
     public void createFolderDirectories() {

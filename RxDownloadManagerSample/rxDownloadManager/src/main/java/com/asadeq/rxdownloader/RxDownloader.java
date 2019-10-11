@@ -1,4 +1,4 @@
-package com.esafirm.rxdownloader;
+package com.asadeq.rxdownloader;
 
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -9,8 +9,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 
-import com.esafirm.rxdownloader.utils.DirectoryHelper;
-import com.esafirm.rxdownloader.utils.LongSparseArray;
+import com.asadeq.rxdownloader.utils.DirectoryHelper;
+import com.asadeq.rxdownloader.utils.LongSparseArray;
 
 import java.io.File;
 
@@ -108,8 +108,8 @@ public class RxDownloader {
         request.setMimeType(mimeType);
 
         if (destinationPath == null) {
-            destinationPath = Environment.DIRECTORY_DOWNLOADS;
-//            destinationPath = DirectoryHelper.ROOT_DIRECTORY_NAME;
+//            destinationPath = Environment.DIRECTORY_DOWNLOADS;
+            destinationPath = DirectoryHelper.ROOT_DIRECTORY_NAME;
         }
 
         File destinationFolder = inPublicDir
@@ -118,7 +118,6 @@ public class RxDownloader {
 
         createFolderIfNeeded(destinationFolder);
         removeDuplicateFileIfExist(destinationFolder, filename);
-
         if (inPublicDir) {
             request.setDestinationInExternalPublicDir(destinationPath, filename);
         } else {
@@ -140,9 +139,10 @@ public class RxDownloader {
 
     private void removeDuplicateFileIfExist(@NonNull File folder, @NonNull String fileName) {
         File file = new File(folder, fileName);
-        if (file.exists() && !file.delete()) {
-            throw new RuntimeException("Can't delete file");
-        }
+        file.deleteOnExit();
+//        if (file.exists() && !file.delete()) {
+//            throw new RuntimeException("Can't delete file");
+//        }
     }
 
 

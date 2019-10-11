@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.esafirm.rxdownloader.utils;
+package com.asadeq.rxdownloader.utils;
 
 /**
  * SparseArray mapping longs to Objects, a version of the platform's

@@ -1,4 +1,4 @@
-package com.esafirm.rxdownloader.utils;
+package com.asadeq.rxdownloader.utils;
 
 class ContainerHelpers {
     static final int[] EMPTY_INTS = new int[0];
