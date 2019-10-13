@@ -39,14 +39,11 @@ For Using Custom DownloadDownloadManagerService You need to implement the Downlo
 	
 	public class MainActivity extends AppCompatActivity implements DownloadReceiverListener {
 		
-		    private DownloadReceiverListener downloadReceiver;
-				@Override
-				protected void onCreate(Bundle savedInstanceState) {
-						super.onCreate(savedInstanceState);
-						setContentView(R.layout.activity_main);
+			@Override
+			protected void onCreate(Bundle savedInstanceState) {
+				super.onCreate(savedInstanceState);
 
-						downloadReceiver = this;
-				}
+			}
 				
 			@Override
 			public void onSuccessDownload(Uri pathUri) {
@@ -64,7 +61,7 @@ For Using Custom DownloadDownloadManagerService You need to implement the Downlo
   Initialize and Call This service using the following code
 ```
   Intent downloadIntent = DownloadManagerService.getInstance().getDownloadService(this
-                        , DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"File Name", downloadReceiver);		
+                        , DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"File Name", this);		
   startService(downloadIntent);
 ```
 
