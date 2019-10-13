@@ -71,10 +71,11 @@ For Using Custom DownloadDownloadManagerService You need to implement the Downlo
 
 
 # B - Download Manager Using RxJava 
+Download Directory handled by default to default Download Directory or to external storage if found
 
 ```
-	RxDownloader.getInstance(this).download(url
-                , Uri.parse(url).getLastPathSegment()
+	RxDownloader.getInstance(this).download(download_url
+                , file_name
                 , DirectoryHelper.getInstance(this).getDownloadDirectory()
                 , RxDownloader.DEFAULT_MIME_TYPE,true)
                 .subscribeOn(Schedulers.io())
