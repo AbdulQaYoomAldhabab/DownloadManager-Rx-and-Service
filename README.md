@@ -6,7 +6,7 @@ Download Manager using Rxjava or Service Download Manager
 # SetUp dependencies
 Add it in your root build.gradle at the end of repositories:
 
-```
+```maven
 allprojects {
 		repositories {
 			maven { url 'https://jitpack.io' }
@@ -16,7 +16,7 @@ allprojects {
 ```
 
   # dependencies Library
-```
+```gradle
   dependencies {
 	        implementation 'com.github.AbdulqaioomAldhabab:DownloadManager-Rx-and-Service:$lastVertion'
 	}
@@ -25,7 +25,7 @@ allprojects {
   # Permission 
   Before you Call any of Those libraries you need to gran User Storage permission and Internet Permission.
 
-```
+```permissions
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -34,11 +34,9 @@ allprojects {
 # Usage
 
 # A 
-Custom DownloadDownloadManagerService You need to implement the DownloadReceiverListener in Your Activity or Fragment
-
-
-		Ex. 
-		public class MainActivity extends AppCompatActivity implements DownloadReceiverListener {
+For Using Custom DownloadDownloadManagerService You need to implement the DownloadReceiverListener in Your Activity or Fragment to get Download Uri.
+	
+	public class MainActivity extends AppCompatActivity implements DownloadReceiverListener {
 		
 		    private DownloadReceiverListener downloadReceiver;
 				@Override
@@ -61,13 +59,12 @@ Custom DownloadDownloadManagerService You need to implement the DownloadReceiver
 		}
 ```
 
-
+`
+  Initialize and Call This service using the following code
 ```
-  #  Initialize and Call This service using the following code
-  
-
   Intent downloadIntent = DownloadManagerService.getInstance().getDownloadService(this
                         , DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"File Name", downloadReceiver);
+			
   startService(downloadIntent);
 ```
 
@@ -89,5 +86,10 @@ Custom DownloadDownloadManagerService You need to implement the DownloadReceiver
                     Log.e(TAG, throwable.getMessage());
                 });
 ```
-	
+
+
+# Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
 	
