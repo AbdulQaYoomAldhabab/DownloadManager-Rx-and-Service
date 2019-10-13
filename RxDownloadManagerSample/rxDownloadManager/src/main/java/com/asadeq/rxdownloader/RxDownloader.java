@@ -42,9 +42,7 @@ public class RxDownloader {
     private RxDownloader(@NonNull Context context) {
         this.context = context.getApplicationContext();
         DownloadStatusReceiver downloadStatusReceiver = new DownloadStatusReceiver();
-        IntentFilter intentFilter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
-        //intentFilter.addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED);
-        context.registerReceiver(downloadStatusReceiver, intentFilter);
+        context.registerReceiver(downloadStatusReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
     @NonNull
@@ -144,9 +142,6 @@ public class RxDownloader {
     private void removeDuplicateFileIfExist(@NonNull File folder, @NonNull String fileName) {
         File file = new File(folder, fileName);
         file.deleteOnExit();
-//        if (file.exists() && !file.delete()) {
-//            throw new RuntimeException("Can't delete file");
-//        }
     }
 
 
@@ -182,10 +177,10 @@ public class RxDownloader {
                         String downloadedUriString = cursor.getString(uriIndex);
                         Uri downloadedUri = Uri.parse(downloadedUriString);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // API 24 and above
-                            File file_apk = new File(DirectoryHelper.getInstance(context)
+                            File mFile = new File(DirectoryHelper.getInstance(context)
                                     .getDownloadDirectory(), downloadedUri.getLastPathSegment());
                             Uri uriForFile = FileProvider.getUriForFile(context
-                                    , context.getPackageName().concat(".provider"), file_apk);
+                                    , context.getPackageName().concat(".provider"), mFile);
                             publishSubject.onNext(uriForFile);
                             publishSubject.onComplete();
                         } else {
@@ -217,6 +212,7 @@ public class RxDownloader {
                 downloadManager.remove(downloadId);
                 subjectMap.remove(downloadId);
                 cursor.close();
+                //context.unregisterReceiver(this);
             }
         }
     }

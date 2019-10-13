@@ -2,7 +2,6 @@ package com.asadeq.rxdownloadmanagersample;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.content.Context;
@@ -16,13 +15,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.asadeq.rxdownloadmanager.DownloadManagerService;
-import com.asadeq.rxdownloadmanager.DirectoryHelper;
+import com.asadeq.downloader.DownloadManagerService;
+import com.asadeq.downloader.DirectoryHelper;
 import com.asadeq.rxdownloader.RxDownloader;
-import com.asadeq.rxdownloadmanager.DownloadReceiverListener;
+import com.asadeq.downloader.DownloadReceiverListener;
 import com.tbruyelle.rxpermissions2.RxPermissions;
-
-import java.io.File;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -72,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.downloadImageButton: {
-                install(Uri.parse("file:///storage/emulated/0/storage/emulated/0/rxdownloadmanager/gf_petvet_v1_0_11_en_fr_de_es_it_pt_android-1.apk"));
+                install(Uri.parse("file:///storage/emulated/0/storage/emulated/0/downloader/gf_petvet_v1_0_11_en_fr_de_es_it_pt_android-1.apk"));
 //                startService(DownloadManagerService.getInstance().getDownloadService(this
 //                        , IMAGE_DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME, "IMAGE Name", downloadReceiver));
                 break;
@@ -83,13 +80,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             }
             case R.id.downloadApkButton: {
-                startService(DownloadManagerService.getInstance().getDownloadService(this
-                        , APK_DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"APK Name", downloadReceiver));
+                Intent downloadIntent = DownloadManagerService.getInstance().getDownloadService(this
+                        , APK_DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"APK Name", this);
+                startService(downloadIntent);
                 break;
             }
             case R.id.downloadApkButtonRx: {
-                //Uri uri = Uri.parse("file:///storage/emulated/0/storage/emulated/0/rxdownloadmanager/gf_petvet_v1_0_11_en_fr_de_es_it_pt_android-1.apk");
-                //install("file:///storage/emulated/0/storage/emulated/0/rxdownloadmanager/gf_petvet_v1_0_11_en_fr_de_es_it_pt_android-1.apk");
+                //Uri uri = Uri.parse("file:///storage/emulated/0/storage/emulated/0/downloader/gf_petvet_v1_0_11_en_fr_de_es_it_pt_android-1.apk");
+                //install("file:///storage/emulated/0/storage/emulated/0/downloader/gf_petvet_v1_0_11_en_fr_de_es_it_pt_android-1.apk");
                 startDownloadingRx(APK_DOWNLOAD_URL);
                 break;
             }

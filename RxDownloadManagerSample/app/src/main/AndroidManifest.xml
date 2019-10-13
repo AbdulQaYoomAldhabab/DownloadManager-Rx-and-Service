@@ -31,10 +31,6 @@
         </activity>
 
 
-        <service
-            android:name="com.asadeq.rxdownloadmanager.DownloadManagerService"
-            android:enabled="true"
-            android:exported="false" />
 
 
         <!--<provider
