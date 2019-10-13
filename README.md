@@ -5,6 +5,7 @@ Download Manager using Rxjava or Service Download Manager
 
 # SetUp dependencies
 Add it in your root build.gradle at the end of repositories:
+
 ```
 allprojects {
 		repositories {
@@ -13,6 +14,7 @@ allprojects {
 	}
 	
 ```
+
   # dependencies Library
 ```
   dependencies {
@@ -20,20 +22,21 @@ allprojects {
 	}
 ```
   
-  # Permission
-3 - Before you Call any of Those libraries you need to gran User Storage permission and Internet Permission.
+  # Permission 
+  Before you Call any of Those libraries you need to gran User Storage permission and Internet Permission.
 
 ```
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```		
-```
+
 # Usage
 
-# A - Custom DownloadDownloadManagerService You need to implement the DownloadReceiverListener in Your Activity or Fragment
+# A 
+Custom DownloadDownloadManagerService You need to implement the DownloadReceiverListener in Your Activity or Fragment
 
-```
+
 		Ex. 
 		public class MainActivity extends AppCompatActivity implements DownloadReceiverListener {
 		
@@ -65,11 +68,12 @@ allprojects {
                         , DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"File Name", downloadReceiver);
   startService(downloadIntent);
 ```
-	
+
+
 # B - Download Manager Using RxJava 
 
 ```
-RxDownloader.getInstance(this).download("download Url"
+	RxDownloader.getInstance(this).download("download Url"
                 , "File Name"
                 , DirectoryHelper.getInstance(this).getDownloadDirectory()
                 , RxDownloader.DEFAULT_MIME_TYPE,true)
@@ -82,6 +86,6 @@ RxDownloader.getInstance(this).download("download Url"
                     // Handle download failed here
                     Log.e(TAG, throwable.getMessage());
                 });
-	```
+```
 	
 	
