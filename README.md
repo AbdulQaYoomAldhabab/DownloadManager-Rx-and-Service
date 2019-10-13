@@ -19,9 +19,12 @@ allprojects {
   # dependencies Library
 ```gradle
   dependencies {
-	        implementation 'com.github.AbdulQaYoomAldhabab:DownloadManager-Rx-and-Service:1.0.1'
+  
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.11'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+    implementation 'com.github.AbdulQaYoomAldhabab:DownloadManager-Rx-and-Service:1.0.1'
 
-	}
+}
 ```
   
   # Permission 
