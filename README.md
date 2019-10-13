@@ -18,7 +18,8 @@ allprojects {
   # dependencies Library
 ```gradle
   dependencies {
-	        implementation 'com.github.AbdulQaYoomAldhabab.DownloadManager-Rx-and-Service:downloadManagerService:1.0.0'
+	       implementation 'com.github.AbdulQaYoomAldhabab:DownloadManager-Rx-and-Service:1.0.2'
+
 	}
 ```
   
