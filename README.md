@@ -73,18 +73,28 @@ For Using Custom DownloadDownloadManagerService You need to implement the Downlo
 # B - Download Manager Using RxJava 
 
 ```
-	RxDownloader.getInstance(this).download("download Url"
-                , "File Name"
+	RxDownloader.getInstance(this).download(url
+                , Uri.parse(url).getLastPathSegment()
                 , DirectoryHelper.getInstance(this).getDownloadDirectory()
                 , RxDownloader.DEFAULT_MIME_TYPE,true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pathUri ->{
-                    // Do what you want with downloaded URI
-                    Log.i(TAG, pathUri.toString());
-                }, throwable -> {
-                    // Handle download failed here
-                    Log.e(TAG, throwable.getMessage());
+                .subscribe(new DisposableObserver<Uri>() {
+                    @Override
+                    public void onNext(Uri pathUri) {
+                        // Do what you want with downloaded path
+                        Log.i(TAG, pathUri.toString());
+                        install(pathUri);
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        // Handle download failed here
+                        Log.e("Rx", e.getMessage());
+                    }
+                    @Override
+                    public void onComplete() {
+                        Log.e("Rx", "onComplete");
+                    }
                 });
 ```
 
