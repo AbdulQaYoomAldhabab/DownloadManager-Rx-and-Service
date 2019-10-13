@@ -11,26 +11,29 @@ allprojects {
 			maven { url 'https://jitpack.io' }
 		}
 	}
-	```
-  
+	
+```
   # dependencies Library
-  ```
+```
   dependencies {
 	        implementation 'com.github.AbdulqaioomAldhabab:DownloadManager-Rx-and-Service:$lastVertion'
 	}
-	```
+```
   
   # Permission
 3 - Before you Call any of Those libraries you need to gran User Storage permission and Internet Permission.
+
 ```
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 ```		
-
+```
 # Usage
 
-## A - Custom DownloadDownloadManagerService You need to implement the DownloadReceiverListener in Your Activity or Fragment
+# A - Custom DownloadDownloadManagerService You need to implement the DownloadReceiverListener in Your Activity or Fragment
+
+```
 		Ex. 
 		public class MainActivity extends AppCompatActivity implements DownloadReceiverListener {
 		
@@ -53,15 +56,18 @@ allprojects {
 					Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
 			}
 		}
-	
+```
+
   #  Initialize and Call This service using the following code
   
-  
+```
   Intent downloadIntent = DownloadManagerService.getInstance().getDownloadService(this
                         , DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"File Name", downloadReceiver);
   startService(downloadIntent);
+```
 	
-## B - Download Manager Using RxJava 
+# B - Download Manager Using RxJava 
+
 ```
 RxDownloader.getInstance(this).download("download Url"
                 , "File Name"
