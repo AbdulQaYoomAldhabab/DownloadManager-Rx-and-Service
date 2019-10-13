@@ -60,12 +60,12 @@ Custom DownloadDownloadManagerService You need to implement the DownloadReceiver
 			}
 		}
 ```
--
-```
+
+
 ```
   #  Initialize and Call This service using the following code
   
-```
+
   Intent downloadIntent = DownloadManagerService.getInstance().getDownloadService(this
                         , DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"File Name", downloadReceiver);
   startService(downloadIntent);
