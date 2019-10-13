@@ -60,7 +60,9 @@ Custom DownloadDownloadManagerService You need to implement the DownloadReceiver
 			}
 		}
 ```
-
+-
+```
+```
   #  Initialize and Call This service using the following code
   
 ```
