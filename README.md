@@ -1,7 +1,8 @@
 # DownloadManager-Rx-and-Service
 Download Manager using Rxjava or Service Download Manager
 
-[![](https://jitpack.io/v/AbdulqaioomAldhabab/DownloadManager-Rx-and-Service.svg)](https://jitpack.io/#AbdulqaioomAldhabab/DownloadManager-Rx-and-Service)
+[![](https://jitpack.io/v/AbdulQaYoomAldhabab/DownloadManager-Rx-and-Service.svg)](https://jitpack.io/#AbdulQaYoomAldhabab/DownloadManager-Rx-and-Service)
+
 
 # SetUp dependencies
 Add it in your root build.gradle at the end of repositories:
