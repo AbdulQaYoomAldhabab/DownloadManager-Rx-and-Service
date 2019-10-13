@@ -18,7 +18,8 @@ allprojects {
   # dependencies Library
 ```gradle
   dependencies {
-	        implementation 'com.github.AbdulqaioomAldhabab:DownloadManager-Rx-and-Service:$lastVertion'
+	        implementation 'com.github.AbdulQaYoomAldhabab:DownloadManager-Rx-and-Service:$lastVertion'
+
 	}
 ```
   
@@ -59,12 +60,11 @@ For Using Custom DownloadDownloadManagerService You need to implement the Downlo
 		}
 ```
 
-`
+```
   Initialize and Call This service using the following code
 ```
   Intent downloadIntent = DownloadManagerService.getInstance().getDownloadService(this
-                        , DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"File Name", downloadReceiver);
-			
+                        , DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"File Name", downloadReceiver);		
   startService(downloadIntent);
 ```
 
