@@ -7,7 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
+
+import androidx.core.content.FileProvider;
 
 import com.asadeq.rxdownloader.utils.DirectoryHelper;
 import com.asadeq.rxdownloader.utils.LongSparseArray;
@@ -26,7 +30,7 @@ public class RxDownloader {
 
     public static final String DEFAULT_MIME_TYPE = "*/*";
     private Context context;
-    private LongSparseArray<PublishSubject<String>> subjectMap = new LongSparseArray<>();
+    private LongSparseArray<PublishSubject<Uri>> subjectMap = new LongSparseArray<>();
     private DownloadManager downloadManager;
 
     public static RxDownloader rxDownloader = null;
@@ -55,13 +59,13 @@ public class RxDownloader {
         return downloadManager;
     }
 
-    public  Observable<String> download(@NonNull String url,
+    public  Observable<Uri> download(@NonNull String url,
                                        @NonNull String filename,
                                        boolean showCompletedNotification) {
         return download(url, filename, DEFAULT_MIME_TYPE, showCompletedNotification);
     }
 
-    public Observable<String> download(@NonNull String url,
+    public Observable<Uri> download(@NonNull String url,
                                        @NonNull String filename,
                                        @NonNull String mimeType,
                                        boolean showCompletedNotification) {
@@ -69,16 +73,16 @@ public class RxDownloader {
                 mimeType, true, showCompletedNotification));
     }
 
-    public Observable<String> download(@NonNull String url,
-                                       @NonNull String filename,
-                                       @NonNull String destinationPath,
-                                       @NonNull String mimeType,
-                                       boolean showCompletedNotification) {
+    public Observable<Uri> download(@NonNull String url,
+                                    @NonNull String filename,
+                                    @NonNull String destinationPath,
+                                    @NonNull String mimeType,
+                                    boolean showCompletedNotification) {
         return download(createRequest(url, filename, destinationPath,
                 mimeType, true, showCompletedNotification));
     }
 
-    public Observable<String> downloadInFilesDir(@NonNull String url,
+    public Observable<Uri> downloadInFilesDir(@NonNull String url,
                                                  @NonNull String filename,
                                                  @NonNull String destinationPath,
                                                  @NonNull String mimeType,
@@ -87,10 +91,10 @@ public class RxDownloader {
                 mimeType, false, showCompletedNotification));
     }
 
-    public Observable<String> download(DownloadManager.Request request) {
+    public Observable<Uri> download(DownloadManager.Request request) {
         long downloadId = getDownloadManager().enqueue(request);
 
-        PublishSubject<String> publishSubject = PublishSubject.create();
+        PublishSubject<Uri> publishSubject = PublishSubject.create();
         subjectMap.put(downloadId, publishSubject);
 
         return publishSubject;
@@ -146,46 +150,73 @@ public class RxDownloader {
     }
 
 
-    public class DownloadStatusReceiver  extends BroadcastReceiver {
+    private class DownloadStatusReceiver  extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             if (intent.getAction().equalsIgnoreCase(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
-                long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L);
-                PublishSubject<String> publishSubject = subjectMap.get(id);
+                long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L);
+                PublishSubject<Uri> publishSubject = subjectMap.get(downloadId);
 
                 if (publishSubject == null)
                     return;
 
                 DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(id);
+                query.setFilterById(downloadId);
                 DownloadManager downloadManager = getDownloadManager();
                 Cursor cursor = downloadManager.query(query);
 
                 if (!cursor.moveToFirst()) {
                     cursor.close();
-                    downloadManager.remove(id);
+                    downloadManager.remove(downloadId);
                     publishSubject.onError(new IllegalStateException("Cursor empty, this shouldn't happened"));
-                    subjectMap.remove(id);
+                    subjectMap.remove(downloadId);
                     return;
                 }
-
-                int statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                if (DownloadManager.STATUS_SUCCESSFUL != cursor.getInt(statusIndex)) {
-                    cursor.close();
-                    downloadManager.remove(id);
-                    publishSubject.onError(new IllegalStateException("Download Failed"));
-                    subjectMap.remove(id);
-                    return;
+                String MimeType = downloadManager.getMimeTypeForDownloadedFile(downloadId);
+                int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                switch (status){
+                    case DownloadManager.STATUS_SUCCESSFUL:
+                        Log.i("DOWNLOAD LISTENER", "STATUS_SUCCESSFUL");
+                        int uriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+                        String downloadedUriString = cursor.getString(uriIndex);
+                        Uri downloadedUri = Uri.parse(downloadedUriString);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // API 24 and above
+                            File file_apk = new File(DirectoryHelper.getInstance(context)
+                                    .getDownloadDirectory(), downloadedUri.getLastPathSegment());
+                            Uri uriForFile = FileProvider.getUriForFile(context
+                                    , context.getPackageName().concat(".provider"), file_apk);
+                            publishSubject.onNext(uriForFile);
+                            publishSubject.onComplete();
+                        } else {
+                            publishSubject.onNext(downloadedUri);
+                            publishSubject.onComplete();
+                        }
+                        Log.i("DOWNLOAD LISTENER", downloadedUriString);
+                        break;
+                    case DownloadManager.STATUS_PAUSED:
+                    case DownloadManager.STATUS_PENDING:
+                        Log.i("DOWNLOAD LISTENER", "STATUS_PENDING");
+                        break;
+                    case DownloadManager.STATUS_RUNNING:
+                        Log.i("DOWNLOAD LISTENER", "STATUS_RUNNING");
+                        break;
+                    case DownloadManager.STATUS_FAILED:
+                        Log.i("DOWNLOAD LISTENER", "STATUS_FAILED");
+                        publishSubject.onError(new IllegalStateException("Download Failed"));
+                        break;
+                    case DownloadManager.ERROR_INSUFFICIENT_SPACE:
+                        Log.i("DOWNLOAD LISTENER", "ERROR_INSUFFICIENT_SPACE");
+                        publishSubject.onError(new IllegalStateException("ERROR_INSUFFICIENT_SPACE"));
+                        break;
+                    case DownloadManager.ERROR_UNKNOWN:
+                        Log.i("DOWNLOAD LISTENER", "ERROR_UNKNOWN");
+                        publishSubject.onError(new IllegalStateException("ERROR_UNKNOWN"));
+                        break;
                 }
-
-                int uriIndex = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
-                String downloadedPackageUriString = cursor.getString(uriIndex);
+                downloadManager.remove(downloadId);
+                subjectMap.remove(downloadId);
                 cursor.close();
-
-                publishSubject.onNext(downloadedPackageUriString);
-                publishSubject.onComplete();
-                subjectMap.remove(id);
             }
         }
     }

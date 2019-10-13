@@ -20,7 +20,7 @@ public class DirectoryHelper extends ContextWrapper {
     }
 
     public static DirectoryHelper directoryHelper;
-    public DirectoryHelper getInstance(Context context) {
+    public static DirectoryHelper getInstance(Context context) {
         if (directoryHelper == null){
             directoryHelper = new DirectoryHelper(context);
         }

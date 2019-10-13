@@ -15,6 +15,7 @@
         tools:ignore="ProtectedPermissions" />
 
     <application
+        android:enabled="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -35,13 +36,8 @@
             android:enabled="true"
             android:exported="false" />
 
-        <receiver android:name="com.asadeq.rxdownloadmanager.DownloadReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
-            </intent-filter>
-        </receiver>
 
-        <provider
+        <!--<provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:grantUriPermissions="true"
@@ -49,7 +45,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
-        </provider>
+        </provider>-->
 
     </application>
 
