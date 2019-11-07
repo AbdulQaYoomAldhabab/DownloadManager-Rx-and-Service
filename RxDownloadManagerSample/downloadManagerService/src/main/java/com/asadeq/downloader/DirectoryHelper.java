@@ -3,9 +3,8 @@ package com.asadeq.downloader;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.os.Environment;
-
+import androidx.annotation.NonNull;
 import java.io.File;
-import io.reactivex.annotations.NonNull;
 
 public class DirectoryHelper extends ContextWrapper {
 
@@ -61,8 +60,10 @@ public class DirectoryHelper extends ContextWrapper {
     }
 
     public void removeDuplicateFileIfExist(@NonNull String fileName) {
-        File file = new File(getDirectory(), fileName);
-        file.deleteOnExit();
+        File file = new File(getDirectory().concat(BACK_SLASH_DELIMITER)
+                .concat(ROOT_DIRECTORY_NAME), fileName);
+        if (file.exists())
+            file.delete();
     }
 
     private String getDirectory(){

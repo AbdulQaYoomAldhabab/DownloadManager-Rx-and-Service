@@ -114,12 +114,15 @@ public class RxDownloader {
             destinationPath = DirectoryHelper.ROOT_DIRECTORY_NAME;
         }
 
-        File destinationFolder = inPublicDir
-                ? Environment.getExternalStoragePublicDirectory(destinationPath)
-                : new File(context.getFilesDir(), destinationPath);
+        File destinationFolder = new File(DirectoryHelper.getInstance(context)
+                .getDownloadDirectory());
+//        File destinationFolder = inPublicDir
+//                ? Environment.getExternalStoragePublicDirectory(destinationPath)
+//                : new File(context.getFilesDir(), destinationPath);
 
         createFolderIfNeeded(destinationFolder);
-        removeDuplicateFileIfExist(destinationFolder, filename);
+        //removeDuplicateFileIfExist(destinationFolder, filename);
+        DirectoryHelper.getInstance(context).removeDuplicateFileIfExist(filename);
         if (inPublicDir) {
             request.setDestinationInExternalPublicDir(destinationPath, filename);
         } else {
@@ -138,12 +141,6 @@ public class RxDownloader {
             throw new RuntimeException("Can't create directory");
         }
     }
-
-    private void removeDuplicateFileIfExist(@NonNull File folder, @NonNull String fileName) {
-        File file = new File(folder, fileName);
-        file.deleteOnExit();
-    }
-
 
     private class DownloadStatusReceiver  extends BroadcastReceiver {
         @Override
@@ -177,11 +174,12 @@ public class RxDownloader {
                         String downloadedUriString = cursor.getString(uriIndex);
                         Uri downloadedUri = Uri.parse(downloadedUriString);
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // API 24 and above
-                            File mFile = new File(DirectoryHelper.getInstance(context)
-                                    .getDownloadDirectory(), downloadedUri.getLastPathSegment());
+                            File mFile = new File(DirectoryHelper.getInstance(context).getDownloadDirectory()
+                                    , downloadedUri.getLastPathSegment());
                             Uri uriForFile = FileProvider.getUriForFile(context
                                     , context.getPackageName().concat(".provider"), mFile);
                             publishSubject.onNext(uriForFile);
+                            //publishSubject.onNext(Uri.parse(uriForFile.getScheme()+":/"+uriForFile.getSchemeSpecificPart()));
                             publishSubject.onComplete();
                         } else {
                             publishSubject.onNext(downloadedUri);

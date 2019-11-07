@@ -21,6 +21,7 @@ public class DownloadManagerService extends IntentService {
     private static final String DOWNLOAD_TITLE   = "Download_title";
     private static final String DOWNLOAD_PATH    = "Download_path";
     private static final String DESTINATION_PATH = "Destination_path";
+    private static final String IS_RECEIVER_REGISTERED = "is_Receiver_Registered";
     private String downloadTitle    = null;
     private String downloadPath     = null;
     private String destinationPath  = null;
@@ -34,6 +35,7 @@ public class DownloadManagerService extends IntentService {
         super("DownloadSongService");
         directoryHelper = DirectoryHelper.getInstance(this);
         directoryHelper.createFolderDirectories();
+
     }
     public static DownloadManagerService downloadManagerService;
     public static DownloadManagerService getInstance(){
@@ -43,27 +45,41 @@ public class DownloadManagerService extends IntentService {
         return downloadManagerService;
     }
 
-    public Intent getDownloadService(@NonNull Context mContext, @NonNull String downloadPath
-            , @NonNull String destinationPath, @NonNull String title,@NonNull DownloadReceiverListener downloadReceiverListener) {
+    public Intent getDownloadService(@NonNull Context mContext, @NonNull String downloadPath,
+                                     @NonNull String destinationPath, @NonNull String title,
+                                     @NonNull DownloadReceiverListener downloadReceiverListener) {
         this.mDownloadReceiverListener = downloadReceiverListener;
         return new Intent(mContext, DownloadManagerService.class)
                 .putExtra(DOWNLOAD_PATH, downloadPath)
                 .putExtra(DESTINATION_PATH, destinationPath)
                 .putExtra(DOWNLOAD_TITLE, title);
     }
+
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         downloadTitle   = intent.getStringExtra(DOWNLOAD_TITLE);
         downloadPath    = intent.getStringExtra(DOWNLOAD_PATH);
         destinationPath = intent.getStringExtra(DESTINATION_PATH);
         fileName        = Uri.parse(downloadPath).getLastPathSegment();
-        fileType        = fileName.substring(fileName.lastIndexOf("."));
+        fileType        = fileName.substring(fileName.lastIndexOf(".")+1);
 
-        getApplicationContext().registerReceiver(new DownloadReceiver(),
-                new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-
+        registerDownloadReceiver();
         directoryHelper.removeDuplicateFileIfExist(fileName);
         startDownload(downloadPath, destinationPath, downloadTitle);
+    }
+
+    private DownloadReceiver downloadReceiver = new DownloadReceiver();
+    private void registerDownloadReceiver() {
+        registerReceiver(downloadReceiver, new IntentFilter(
+                DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+    private void unRegisterDownloadReceiver() {
+        try {
+            if (downloadReceiver != null)
+                unregisterReceiver(downloadReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void startDownload(String downloadPath, String destinationPath, String title) {
@@ -111,7 +127,6 @@ public class DownloadManagerService extends IntentService {
                             mDownloadReceiverListener.onErrorDownload(new IllegalStateException("Cursor empty, this shouldn't happened"));
                         return;
                     }
-                    String MimeType = downloadManager.getMimeTypeForDownloadedFile(downloadId);
                     int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
                     switch (status){
                         case DownloadManager.STATUS_SUCCESSFUL:
@@ -161,7 +176,7 @@ public class DownloadManagerService extends IntentService {
                     Log.i("DOWNLOAD Exception ", e.getMessage());
                 } finally {
                     cursor.close();
-//                    unregisterReceiver(this);
+                    //unRegisterDownloadReceiver();
                 }
             }
         }

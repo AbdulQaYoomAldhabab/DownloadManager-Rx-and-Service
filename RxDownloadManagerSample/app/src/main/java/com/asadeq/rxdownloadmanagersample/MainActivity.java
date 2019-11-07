@@ -25,7 +25,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, DownloadReceiverListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String IMAGE_DOWNLOAD_URL = "http://globalmedicalco.com/photos/globalmedicalco/9/41427.jpg";
@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.downloadSongButton).setOnClickListener(this);
         findViewById(R.id.downloadApkButton).setOnClickListener(this);
         findViewById(R.id.downloadApkButtonRx).setOnClickListener(this);
-        downloadReceiver = this;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_EXTERNAL_STORAGE_REQUEST_CODE);
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             case R.id.downloadApkButton: {
                 Intent downloadIntent = DownloadManagerService.getInstance().getDownloadService(this
-                        , APK_DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"APK Name", this);
+                        , APK_DOWNLOAD_URL, DirectoryHelper.ROOT_DIRECTORY_NAME,"APK Name", downloadReceiverListener);
                 startService(downloadIntent);
                 break;
             }
@@ -102,29 +101,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 , RxDownloader.DEFAULT_MIME_TYPE,true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(pathUri ->{
-                    // Do what you want with downloaded path
-                    Log.i(TAG, pathUri.toString());
-                    install(pathUri);
-                }, throwable -> {
-                    // Handle download failed here
-                    Log.e(TAG, throwable.getMessage());
+                .subscribe(new DisposableObserver<Uri>() {
+                    @Override
+                    public void onNext(Uri pathUri) {
+                        // Do what you want with downloaded path
+                        Log.i(TAG, pathUri.toString());
+                        install(pathUri);
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        // Handle download failed here
+                        Log.e("Rx", e.getMessage());
+                    }
+                    @Override
+                    public void onComplete() {
+                        Log.e("Rx", "onComplete");
+                    }
                 });
     }
+    private DownloadReceiverListener downloadReceiverListener = new DownloadReceiverListener() {
+        @Override
+        public void onSuccessDownload(Uri pathUri) {
+            install(pathUri);
+        }
+        @Override
+        public void onErrorDownload(Throwable e) {
+            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    };
 
-    @Override
-    public void onSuccessDownload(Uri pathUri) {
-        install(pathUri);
-    }
-
-    @Override
-    public void onErrorDownload(Throwable e) {
-        Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
-    }
     public void install(Uri fileUri) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // API 24 and above
                 Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 intent.setData(fileUri);
                 startActivity(intent);
